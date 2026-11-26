@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Account Org Charts</title>
+<style>
+  :root {
+    --bg: #f5f6f8; --card: #fff; --ink: #1c2330; --muted: #667085; --line: #e3e6eb;
+    --accent: #2457d6; --green: #1a7f4b; --amber: #b25e09; --blue: #2457d6; --grey: #8a94a6; --red: #b42318;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--ink); }
+  header { background: #101828; color: #fff; padding: 14px 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  header h1 { font-size: 17px; margin: 0; font-weight: 600; }
+  header .spacer { flex: 1; }
+  header button, header label.btn { background: #ffffff1a; color: #fff; border: 1px solid #ffffff33; border-radius: 6px; padding: 6px 10px; font: inherit; font-size: 13px; cursor: pointer; }
+  header button:hover, header label.btn:hover { background: #ffffff2e; }
+  nav { display: flex; gap: 4px; padding: 0 24px; background: #101828; overflow-x: auto; }
+  nav button { background: none; border: 0; color: #c0c6d1; padding: 10px 14px; font: inherit; font-weight: 500; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; }
+  nav button.active { color: #fff; border-bottom-color: #5b8cff; }
+  nav .stage-dot { display: inline-block; font-size: 11px; color: #98a2b3; margin-left: 6px; font-weight: 400; }
+  main { max-width: 1280px; margin: 0 auto; padding: 20px 24px 60px; }
+  .layout { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
+  @media (max-width: 1000px) { .layout { grid-template-columns: 1fr; } }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+  .panel h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 0 0 10px; font-weight: 600; }
+  .meta { color: var(--muted); font-size: 12px; margin-bottom: 14px; }
+  .legend { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; font-size: 12px; color: var(--muted); }
+  .top { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; position: relative; padding-bottom: 18px; }
+  .top::after { content: ""; position: absolute; left: 50%; bottom: 0; height: 18px; border-left: 2px solid var(--line); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; border-top: 2px solid var(--line); padding-top: 18px; }
+  .person { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--grey); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .top .person { width: 340px; max-width: 100%; }
+  .top .person.side { width: 260px; }
+  .person.s-verified { border-left-color: var(--green); }
+  .person.s-corrected { border-left-color: var(--blue); }
+  .person.s-partial { border-left-color: var(--amber); }
+  .person.s-unverified { border-left-color: var(--grey); }
+  .person.s-vacant { border-left-color: var(--grey); border-style: dashed; border-left-style: solid; background: #fafbfc; }
+  .person .name { font-weight: 650; font-size: 15px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .person .title { font-weight: 500; }
+  .person .remit { color: var(--muted); font-size: 12.5px; }
+  .person .evidence { font-size: 11.5px; color: var(--muted); font-style: italic; }
+  .badge { display: inline-block; font-size: 10.5px; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; padding: 1px 7px; border-radius: 99px; border: 1px solid; }
+  .b-verified { color: var(--green); border-color: #a6d9bd; background: #eefaf3; }
+  .b-corrected { color: var(--blue); border-color: #b3c7f5; background: #eef3ff; }
+  .b-partial { color: var(--amber); border-color: #f2c99a; background: #fff6ec; }
+  .b-unverified { color: #555f70; border-color: #d0d5dd; background: #f4f5f7; }
+  .b-vacant { color: #555f70; border-color: #d0d5dd; background: #fff; border-style: dashed; }
+  .b-new { color: #fff; background: var(--accent); border-color: var(--accent); }
+  .rel { display: flex; gap: 6px; align-items: center; margin-top: 4px; padding-top: 6px; border-top: 1px dashed var(--line); }
+  .rel select { font: inherit; font-size: 12px; padding: 2px 4px; border: 1px solid var(--line); border-radius: 5px; background: #fff; }
+  .rel input { flex: 1; min-width: 0; font: inherit; font-size: 12px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 5px; }
+  .rel select[data-v="Champion"] { background: #eefaf3; color: var(--green); }
+  .rel select[data-v="Engaged"], .rel select[data-v="Met"] { background: #eef3ff; color: var(--blue); }
+  .rel select[data-v="Blocker"] { background: #fef3f2; color: var(--red); }
+  h3.section { font-size: 13px; color: var(--muted); margin: 24px 0 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+  .boxes { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+  @media (max-width: 700px) { .boxes { grid-template-columns: 1fr; } }
+  .boxes ol, .boxes ul { margin: 0; padding-left: 18px; }
+  .boxes li { margin: 3px 0; }
+  .warn { background: #fff8f0; border-color: #f2d4b0; }
+  .side-panel { position: sticky; top: 12px; display: flex; flex-direction: column; gap: 12px; }
+  .side-panel label { display: block; font-size: 12px; color: var(--muted); margin: 8px 0 4px; font-weight: 500; }
+  .side-panel select, .side-panel input, .side-panel textarea { width: 100%; font: inherit; padding: 7px 9px; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+  .side-panel textarea { resize: vertical; min-height: 70px; }
+  .side-panel button.primary { margin-top: 8px; background: var(--accent); color: #fff; border: 0; border-radius: 6px; padding: 7px 12px; font: inherit; font-weight: 500; cursor: pointer; }
+  .log { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; max-height: 420px; overflow-y: auto; }
+  .log li { border-left: 3px solid var(--line); padding: 2px 0 2px 10px; position: relative; }
+  .log .d { font-size: 11.5px; color: var(--muted); }
+  .log .t { white-space: pre-wrap; }
+  .log .x { position: absolute; right: 0; top: 0; border: 0; background: none; color: var(--grey); cursor: pointer; font-size: 14px; }
+  .log .x:hover { color: var(--red); }
+  .empty { color: var(--muted); font-size: 12.5px; font-style: italic; }
+  .saved { font-size: 11.5px; color: var(--green); margin-left: 8px; opacity: 0; transition: opacity .3s; }
+  .saved.on { opacity: 1; }
+  .foot { margin-top: 28px; font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Account Org Charts</h1>
+  <span class="spacer"></span>
+  <button id="exportBtn" title="Download your notes as a JSON backup">Export notes</button>
+  <label class="btn" title="Restore notes from a JSON backup">Import notes<input type="file" id="importFile" accept="application/json" hidden></label>
+</header>
+<nav id="tabs"></nav>
+<main id="app"></main>
+
+<script src="data.js"></script>
+<script>
+(function () {
+  const KEY = "account-org-charts.notes.v1";
+  const STAGES = ["Not started", "Prospecting", "Discovery", "Qualified", "Proposal", "Negotiation", "Won", "On hold"];
+  const RELS = ["—", "Contacted", "Met", "Engaged", "Champion", "Blocker"];
+  const LABELS = { verified: "Verified", corrected: "Corrected", partial: "Partly verified", unverified: "Unverified", vacant: "Vacant / TBC" };
+
+  let state = load();
+  let current = location.hash.slice(1) || ACCOUNTS[0].id;
+  if (!ACCOUNTS.some(a => a.id === current)) current = ACCOUNTS[0].id;
+
+  function load() {
+    try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; }
+  }
+  function save() {
+    localStorage.setItem(KEY, JSON.stringify(state));
+    const s = document.getElementById("savedFlag");
+    if (s) { s.classList.add("on"); clearTimeout(save.t); save.t = setTimeout(() => s.classList.remove("on"), 1200); }
+  }
+  function acct(id) {
+    state[id] = state[id] || {};
+    const a = state[id];
+    a.stage ??= "Not started"; a.next ??= ""; a.log ??= []; a.people ??= {};
+    return a;
+  }
+  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const pkey = p => (p.name + "|" + p.title).toLowerCase();
+
+  function renderTabs() {
+    document.getElementById("tabs").innerHTML = ACCOUNTS.map(a => {
+      const st = acct(a.id).stage;
+      return `<button data-id="${a.id}" class="${a.id === current ? "active" : ""}">${esc(a.name)}<span class="stage-dot">${st === "Not started" ? "" : esc(st)}</span></button>`;
+    }).join("");
+  }
+
+  function personCard(p, accountId, extraClass = "") {
+    const rel = acct(accountId).people[pkey(p)] || {};
+    const status = p.status || "unverified";
+    return `<div class="person s-${status} ${extraClass}">
+      <div class="name">${esc(p.name)}
+        ${p.tag ? `<span class="badge b-new">${esc(p.tag)}</span>` : ""}
+        <span class="badge b-${status}" title="${esc(p.evidence || "")}">${LABELS[status]}</span>
+      </div>
+      <div class="title">${esc(p.title)}</div>
+      ${p.remit ? `<div class="remit">${esc(p.remit)}</div>` : ""}
+      ${p.evidence ? `<div class="evidence">${esc(p.evidence)}</div>` : ""}
+      <div class="rel">
+        <select data-pk="${esc(pkey(p))}" data-v="${esc(rel.rel || "—")}" title="Relationship">${RELS.map(r => `<option ${r === (rel.rel || "—") ? "selected" : ""}>${r}</option>`).join("")}</select>
+        <input data-pk="${esc(pkey(p))}" placeholder="Quick note…" value="${esc(rel.note || "")}">
+      </div>
+    </div>`;
+  }
+
+  function render() {
+    const A = ACCOUNTS.find(a => a.id === current);
+    const S = acct(A.id);
+    renderTabs();
+    const counts = {};
+    [A.leader, A.sidekick, ...A.reports, ...A.adjacent].filter(Boolean).forEach(p => counts[p.status] = (counts[p.status] || 0) + 1);
+
+    document.getElementById("app").innerHTML = `
+      <div class="layout">
+        <section>
+          <div class="meta">${esc(A.asOf)} · Source: ${esc(A.source)}</div>
+          <div class="legend">${Object.keys(LABELS).filter(k => counts[k]).map(k => `<span class="badge b-${k}">${LABELS[k]} · ${counts[k]}</span>`).join("")}</div>
+          <div class="top">
+            ${personCard(A.leader, A.id)}
+            ${A.sidekick ? personCard(A.sidekick, A.id, "side") : ""}
+          </div>
+          <div class="grid">${A.reports.map(p => personCard(p, A.id)).join("")}</div>
+          ${A.adjacent.length ? `<h3 class="section">Adjacent executives &amp; influencers</h3>
+          <div class="grid" style="border-top:0;padding-top:0">${A.adjacent.map(p => personCard(p, A.id)).join("")}</div>` : ""}
+          <div class="boxes">
+            <div class="panel"><h2>Suggested entry order</h2><ol>${A.entryOrder.map(x => `<li>${esc(x)}</li>`).join("")}</ol></div>
+            <div class="panel warn"><h2>Still to validate</h2><ul>${A.validationNotes.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
+          </div>
+        </section>
+        <aside class="side-panel">
+          <div class="panel">
+            <h2>Where we're up to <span class="saved" id="savedFlag">Saved</span></h2>
+            <label for="stage">Stage</label>
+            <select id="stage">${STAGES.map(s => `<option ${s === S.stage ? "selected" : ""}>${s}</option>`).join("")}</select>
+            <label for="next">Next step</label>
+            <input id="next" placeholder="e.g. Intro meeting with Kai Yang" value="${esc(S.next)}">
+          </div>
+          <div class="panel">
+            <h2>Notes</h2>
+            <textarea id="noteText" placeholder="What happened? (Ctrl/⌘+Enter to add)"></textarea>
+            <button class="primary" id="addNote">Add note</button>
+            <ul class="log">${S.log.length ? S.log.map((n, i) => `<li><div class="d">${esc(new Date(n.at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }))}</div><div class="t">${esc(n.text)}</div><button class="x" data-i="${i}" title="Delete note">×</button></li>`).join("") : `<li class="empty">No notes yet.</li>`}</ul>
+          </div>
+        </aside>
+      </div>
+      <div class="foot">Notes are saved in this browser only (localStorage). Use “Export notes” to back them up or move them to another device. Org data lives in <code>data.js</code>.</div>`;
+  }
+
+  // Events (delegated)
+  document.getElementById("tabs").addEventListener("click", e => {
+    const b = e.target.closest("button[data-id]"); if (!b) return;
+    current = b.dataset.id; history.replaceState(null, "", "#" + current); render();
+  });
+  const app = document.getElementById("app");
+  app.addEventListener("change", e => {
+    const S = acct(current), t = e.target;
+    if (t.id === "stage") { S.stage = t.value; save(); renderTabs(); }
+    else if (t.tagName === "SELECT" && t.dataset.pk) {
+      const p = S.people[t.dataset.pk] ||= {}; p.rel = t.value; t.dataset.v = t.value; save();
+    }
+  });
+  app.addEventListener("input", e => {
+    const S = acct(current), t = e.target;
+    if (t.id === "next") { S.next = t.value; save(); }
+    else if (t.tagName === "INPUT" && t.dataset.pk) { const p = S.people[t.dataset.pk] ||= {}; p.note = t.value; save(); }
+  });
+  function addNote() {
+    const ta = document.getElementById("noteText"); const text = ta.value.trim(); if (!text) return;
+    acct(current).log.unshift({ at: new Date().toISOString(), text }); save(); render();
+  }
+  app.addEventListener("click", e => {
+    if (e.target.id === "addNote") addNote();
+    const x = e.target.closest(".log .x");
+    if (x && confirm("Delete this note?")) { acct(current).log.splice(+x.dataset.i, 1); save(); render(); }
+  });
+  app.addEventListener("keydown", e => { if (e.target.id === "noteText" && e.key === "Enter" && (e.ctrlKey || e.metaKey)) addNote(); });
+
+  document.getElementById("exportBtn").onclick = () => {
+    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+    a.download = `account-notes-${new Date().toISOString().slice(0, 10)}.json`; a.click();
+  };
+  document.getElementById("importFile").onchange = async e => {
+    const f = e.target.files[0]; if (!f) return;
+    try {
+      const data = JSON.parse(await f.text());
+      if (typeof data !== "object" || Array.isArray(data)) throw 0;
+      if (!confirm("Replace the notes in this browser with the imported file?")) return;
+      state = data; save(); render();
+    } catch { alert("That file isn't a valid notes export."); }
+    e.target.value = "";
+  };
+
+  render();
+})();
+</script>
+</body>
+</html>
