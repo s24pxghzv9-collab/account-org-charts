@@ -1,0 +1,8 @@
+{
+  "name": "account-org-charts",
+  "private": true,
+  "dependencies": {
+    "@vercel/functions": "^3.0.0"
+  },
+  "type": "module"
+}

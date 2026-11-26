@@ -15,7 +15,7 @@
   header { background: #101828; color: #fff; padding: 14px 24px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
   header h1 { font-size: 17px; margin: 0; font-weight: 600; }
   header .spacer { flex: 1; }
-  header button, header label.btn { background: #ffffff1a; color: #fff; border: 1px solid #ffffff33; border-radius: 6px; padding: 6px 10px; font: inherit; font-size: 13px; cursor: pointer; }
+  header button, header label.btn, header a.btn { background: #ffffff1a; color: #fff; border: 1px solid #ffffff33; border-radius: 6px; padding: 6px 10px; font: inherit; font-size: 13px; cursor: pointer; }
   header button:hover, header label.btn:hover { background: #ffffff2e; }
   nav { display: flex; gap: 4px; padding: 0 24px; background: #101828; overflow-x: auto; }
   nav button { background: none; border: 0; color: #c0c6d1; padding: 10px 14px; font: inherit; font-weight: 500; cursor: pointer; border-bottom: 3px solid transparent; white-space: nowrap; }
@@ -117,6 +117,7 @@
   <button id="exportAllBtn" title="One slide per account">Export all to PowerPoint</button>
   <button id="exportBtn" title="Download everything (people, contacts, notes) as a JSON backup">Backup</button>
   <label class="btn" title="Restore from a JSON backup">Restore<input type="file" id="importFile" accept="application/json" hidden></label>
+  <a class="btn" href="/logout" style="text-decoration:none" title="Sign out">Sign out</a>
 </header>
 <nav id="tabs"></nav>
 <main id="app"></main>
