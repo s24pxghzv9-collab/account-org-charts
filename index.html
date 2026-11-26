@@ -77,162 +77,102 @@
   .saved { font-size: 11.5px; color: var(--green); margin-left: 8px; opacity: 0; transition: opacity .3s; }
   .saved.on { opacity: 1; }
   .foot { margin-top: 28px; font-size: 12px; color: var(--muted); }
+  .toolbar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+  .toolbar .meta { margin: 0; flex: 1; min-width: 200px; }
+  .btn2 { background: #fff; border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; font: inherit; font-size: 13px; cursor: pointer; color: var(--ink); }
+  .btn2:hover { background: #f0f2f5; }
+  .btn2.blue { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .btn2.blue:hover { background: #1c47b3; }
+  .btn2.danger { color: var(--red); }
+  .person { position: relative; }
+  .person .edit { position: absolute; top: 6px; right: 6px; border: 0; background: none; cursor: pointer; color: var(--grey); font-size: 14px; padding: 2px 5px; border-radius: 4px; }
+  .person .edit:hover { background: #f0f2f5; color: var(--ink); }
+  .person .name { padding-right: 22px; }
+  .person.hl { box-shadow: inset 0 0 0 1px #c9d7fb; }
+  .contacts { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 12px; }
+  .contacts a { color: var(--accent); text-decoration: none; overflow-wrap: anywhere; }
+  .contacts a:hover { text-decoration: underline; }
+  .addcard { border: 2px dashed var(--line); border-radius: 8px; background: none; color: var(--muted); font: inherit; cursor: pointer; min-height: 80px; }
+  .addcard:hover { border-color: var(--accent); color: var(--accent); }
+  dialog { border: 0; border-radius: 12px; padding: 0; width: min(560px, 94vw); box-shadow: 0 20px 60px #0004; }
+  dialog::backdrop { background: #10182866; }
+  dialog form { padding: 18px 20px; }
+  dialog h3 { margin: 0 0 12px; font-size: 16px; }
+  .fgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+  .fgrid .full { grid-column: 1 / -1; }
+  .fgrid label { display: flex; flex-direction: column; gap: 3px; font-size: 12px; color: var(--muted); font-weight: 500; }
+  .fgrid label.chk { flex-direction: row; align-items: center; gap: 6px; color: var(--ink); font-size: 13px; }
+  .fgrid input:not([type=checkbox]), .fgrid select, .fgrid textarea { font: inherit; font-size: 13.5px; padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; color: var(--ink); }
+  .fgrid textarea { min-height: 60px; resize: vertical; }
+  .fgrid .sep { grid-column: 1 / -1; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); border-top: 1px solid var(--line); padding-top: 8px; margin-top: 4px; font-weight: 600; }
+  .dlg-actions { display: flex; gap: 8px; margin-top: 16px; align-items: center; flex-wrap: wrap; }
+  .dlg-actions .spacer { flex: 1; }
 </style>
 </head>
 <body>
 <header>
   <h1>Account Org Charts</h1>
   <span class="spacer"></span>
-  <button id="exportBtn" title="Download your notes as a JSON backup">Export notes</button>
-  <label class="btn" title="Restore notes from a JSON backup">Import notes<input type="file" id="importFile" accept="application/json" hidden></label>
+  <button id="addAccountBtn">+ Account</button>
+  <button id="exportAllBtn" title="One slide per account">Export all to PowerPoint</button>
+  <button id="exportBtn" title="Download everything (people, contacts, notes) as a JSON backup">Backup</button>
+  <label class="btn" title="Restore from a JSON backup">Restore<input type="file" id="importFile" accept="application/json" hidden></label>
 </header>
 <nav id="tabs"></nav>
 <main id="app"></main>
 
+<dialog id="personDlg"><form method="dialog" id="personForm">
+  <h3 id="personDlgTitle">Edit person</h3>
+  <div class="fgrid">
+    <label>Name<input name="name" required></label>
+    <label>Title<input name="title"></label>
+    <label class="full">Remit / notes on role<input name="remit"></label>
+    <label>Position on chart<select name="position">
+      <option value="leader">Leader (top box)</option><option value="sidekick">Chief of staff (beside leader)</option>
+      <option value="report">Direct report</option><option value="adjacent">Adjacent / influencer (not on slide)</option></select></label>
+    <label>Validation<select name="status">
+      <option value="verified">Verified</option><option value="corrected">Corrected</option><option value="partial">Partly verified</option>
+      <option value="unverified">Unverified</option><option value="vacant">Vacant / TBC</option></select></label>
+    <label class="full">Evidence / source<input name="evidence"></label>
+    <label class="chk"><input type="checkbox" name="isNew"> “NEW” label</label>
+    <label class="chk"><input type="checkbox" name="highlight"> Blue accent bar</label>
+    <div class="sep">Contact details</div>
+    <label>Email<input name="email" type="email" placeholder="name@company.com"></label>
+    <label>Phone<input name="phone" type="tel"></label>
+    <label class="full">LinkedIn URL<input name="linkedin" placeholder="https://www.linkedin.com/in/…"></label>
+  </div>
+  <div class="dlg-actions">
+    <button type="button" class="btn2 danger" id="delPerson">Delete</button>
+    <button type="button" class="btn2" id="moveUp" title="Move earlier in the row">◀ Move</button>
+    <button type="button" class="btn2" id="moveDown" title="Move later in the row">Move ▶</button>
+    <span class="spacer"></span>
+    <button type="button" class="btn2" id="cancelPerson">Cancel</button>
+    <button type="submit" class="btn2 blue">Save</button>
+  </div>
+</form></dialog>
+
+<dialog id="acctDlg"><form method="dialog" id="acctForm">
+  <h3>Account settings</h3>
+  <div class="fgrid">
+    <label class="full">Account name<input name="name" required></label>
+    <label class="full">Slide title<input name="slideTitle"></label>
+    <label>Support box on slide (blank = none)<input name="supportBox"></label>
+    <label>Slide footer label<input name="footer"></label>
+    <label class="full">Suggested entry order (one per line)<textarea name="entryOrder"></textarea></label>
+    <label class="full">Still to validate (one per line)<textarea name="validationNotes"></textarea></label>
+  </div>
+  <div class="dlg-actions">
+    <button type="button" class="btn2 danger" id="delAcct">Delete account</button>
+    <button type="button" class="btn2" id="resetAcct" title="Restore the original validated people for this account">Reset people to defaults</button>
+    <span class="spacer"></span>
+    <button type="button" class="btn2" id="cancelAcct">Cancel</button>
+    <button type="submit" class="btn2 blue">Save</button>
+  </div>
+</form></dialog>
+
 <script src="data.js"></script>
-<script>
-(function () {
-  const KEY = "account-org-charts.notes.v1";
-  const STAGES = ["Not started", "Prospecting", "Discovery", "Qualified", "Proposal", "Negotiation", "Won", "On hold"];
-  const RELS = ["—", "Contacted", "Met", "Engaged", "Champion", "Blocker"];
-  const LABELS = { verified: "Verified", corrected: "Corrected", partial: "Partly verified", unverified: "Unverified", vacant: "Vacant / TBC" };
-
-  let state = load();
-  let current = location.hash.slice(1) || ACCOUNTS[0].id;
-  if (!ACCOUNTS.some(a => a.id === current)) current = ACCOUNTS[0].id;
-
-  function load() {
-    try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; }
-  }
-  function save() {
-    localStorage.setItem(KEY, JSON.stringify(state));
-    const s = document.getElementById("savedFlag");
-    if (s) { s.classList.add("on"); clearTimeout(save.t); save.t = setTimeout(() => s.classList.remove("on"), 1200); }
-  }
-  function acct(id) {
-    state[id] = state[id] || {};
-    const a = state[id];
-    a.stage ??= "Not started"; a.next ??= ""; a.log ??= []; a.people ??= {};
-    return a;
-  }
-  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const pkey = p => (p.name + "|" + p.title).toLowerCase();
-
-  function renderTabs() {
-    document.getElementById("tabs").innerHTML = ACCOUNTS.map(a => {
-      const st = acct(a.id).stage;
-      return `<button data-id="${a.id}" class="${a.id === current ? "active" : ""}">${esc(a.name)}<span class="stage-dot">${st === "Not started" ? "" : esc(st)}</span></button>`;
-    }).join("");
-  }
-
-  function personCard(p, accountId, extraClass = "") {
-    const rel = acct(accountId).people[pkey(p)] || {};
-    const status = p.status || "unverified";
-    return `<div class="person s-${status} ${extraClass}">
-      <div class="name">${esc(p.name)}
-        ${p.tag ? `<span class="badge b-new">${esc(p.tag)}</span>` : ""}
-        <span class="badge b-${status}" title="${esc(p.evidence || "")}">${LABELS[status]}</span>
-      </div>
-      <div class="title">${esc(p.title)}</div>
-      ${p.remit ? `<div class="remit">${esc(p.remit)}</div>` : ""}
-      ${p.evidence ? `<div class="evidence">${esc(p.evidence)}</div>` : ""}
-      <div class="rel">
-        <select data-pk="${esc(pkey(p))}" data-v="${esc(rel.rel || "—")}" title="Relationship">${RELS.map(r => `<option ${r === (rel.rel || "—") ? "selected" : ""}>${r}</option>`).join("")}</select>
-        <input data-pk="${esc(pkey(p))}" placeholder="Quick note…" value="${esc(rel.note || "")}">
-      </div>
-    </div>`;
-  }
-
-  function render() {
-    const A = ACCOUNTS.find(a => a.id === current);
-    const S = acct(A.id);
-    renderTabs();
-    const counts = {};
-    [A.leader, A.sidekick, ...A.reports, ...A.adjacent].filter(Boolean).forEach(p => counts[p.status] = (counts[p.status] || 0) + 1);
-
-    document.getElementById("app").innerHTML = `
-      <div class="layout">
-        <section>
-          <div class="meta">${esc(A.asOf)} · Source: ${esc(A.source)}</div>
-          <div class="legend">${Object.keys(LABELS).filter(k => counts[k]).map(k => `<span class="badge b-${k}">${LABELS[k]} · ${counts[k]}</span>`).join("")}</div>
-          <div class="top">
-            ${personCard(A.leader, A.id)}
-            ${A.sidekick ? personCard(A.sidekick, A.id, "side") : ""}
-          </div>
-          <div class="grid">${A.reports.map(p => personCard(p, A.id)).join("")}</div>
-          ${A.adjacent.length ? `<h3 class="section">Adjacent executives &amp; influencers</h3>
-          <div class="grid" style="border-top:0;padding-top:0">${A.adjacent.map(p => personCard(p, A.id)).join("")}</div>` : ""}
-          <div class="boxes">
-            <div class="panel"><h2>Suggested entry order</h2><ol>${A.entryOrder.map(x => `<li>${esc(x)}</li>`).join("")}</ol></div>
-            <div class="panel warn"><h2>Still to validate</h2><ul>${A.validationNotes.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>
-          </div>
-        </section>
-        <aside class="side-panel">
-          <div class="panel">
-            <h2>Where we're up to <span class="saved" id="savedFlag">Saved</span></h2>
-            <label for="stage">Stage</label>
-            <select id="stage">${STAGES.map(s => `<option ${s === S.stage ? "selected" : ""}>${s}</option>`).join("")}</select>
-            <label for="next">Next step</label>
-            <input id="next" placeholder="e.g. Intro meeting with Kai Yang" value="${esc(S.next)}">
-          </div>
-          <div class="panel">
-            <h2>Notes</h2>
-            <textarea id="noteText" placeholder="What happened? (Ctrl/⌘+Enter to add)"></textarea>
-            <button class="primary" id="addNote">Add note</button>
-            <ul class="log">${S.log.length ? S.log.map((n, i) => `<li><div class="d">${esc(new Date(n.at).toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }))}</div><div class="t">${esc(n.text)}</div><button class="x" data-i="${i}" title="Delete note">×</button></li>`).join("") : `<li class="empty">No notes yet.</li>`}</ul>
-          </div>
-        </aside>
-      </div>
-      <div class="foot">Notes are saved in this browser only (localStorage). Use “Export notes” to back them up or move them to another device. Org data lives in <code>data.js</code>.</div>`;
-  }
-
-  // Events (delegated)
-  document.getElementById("tabs").addEventListener("click", e => {
-    const b = e.target.closest("button[data-id]"); if (!b) return;
-    current = b.dataset.id; history.replaceState(null, "", "#" + current); render();
-  });
-  const app = document.getElementById("app");
-  app.addEventListener("change", e => {
-    const S = acct(current), t = e.target;
-    if (t.id === "stage") { S.stage = t.value; save(); renderTabs(); }
-    else if (t.tagName === "SELECT" && t.dataset.pk) {
-      const p = S.people[t.dataset.pk] ||= {}; p.rel = t.value; t.dataset.v = t.value; save();
-    }
-  });
-  app.addEventListener("input", e => {
-    const S = acct(current), t = e.target;
-    if (t.id === "next") { S.next = t.value; save(); }
-    else if (t.tagName === "INPUT" && t.dataset.pk) { const p = S.people[t.dataset.pk] ||= {}; p.note = t.value; save(); }
-  });
-  function addNote() {
-    const ta = document.getElementById("noteText"); const text = ta.value.trim(); if (!text) return;
-    acct(current).log.unshift({ at: new Date().toISOString(), text }); save(); render();
-  }
-  app.addEventListener("click", e => {
-    if (e.target.id === "addNote") addNote();
-    const x = e.target.closest(".log .x");
-    if (x && confirm("Delete this note?")) { acct(current).log.splice(+x.dataset.i, 1); save(); render(); }
-  });
-  app.addEventListener("keydown", e => { if (e.target.id === "noteText" && e.key === "Enter" && (e.ctrlKey || e.metaKey)) addNote(); });
-
-  document.getElementById("exportBtn").onclick = () => {
-    const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
-    const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
-    a.download = `account-notes-${new Date().toISOString().slice(0, 10)}.json`; a.click();
-  };
-  document.getElementById("importFile").onchange = async e => {
-    const f = e.target.files[0]; if (!f) return;
-    try {
-      const data = JSON.parse(await f.text());
-      if (typeof data !== "object" || Array.isArray(data)) throw 0;
-      if (!confirm("Replace the notes in this browser with the imported file?")) return;
-      state = data; save(); render();
-    } catch { alert("That file isn't a valid notes export."); }
-    e.target.value = "";
-  };
-
-  render();
-})();
-</script>
+<script src="vendor/pptxgen.bundle.js"></script>
+<script src="pptx-export.js"></script>
+<script src="app.js"></script>
 </body>
 </html>

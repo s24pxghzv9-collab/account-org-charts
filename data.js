@@ -5,11 +5,16 @@
 //   partial    – only third-party directory/LinkedIn evidence; looks right but confirm
 //   unverified – no public evidence found; came from account intel / source chart
 //   vacant     – role open or holder unknown
+// isNew = 'NEW' label on the slide; highlight = blue accent bar (otherwise navy).
+// These are only the starting defaults – edits made in the app are saved in the browser.
 // Validated 26 Nov 2026.
 
 window.ACCOUNTS = [
   {
     id: "anz",
+    slideTitle: "NEW ANZ Technology Org Chart",
+    supportBox: "Gartner Support",
+    footer: "RESTRICTED",
     name: "ANZ Bank",
     asOf: "Validated 26 Nov 2026",
     source: "Technology org chart (Nov 2026) + public sources",
@@ -19,7 +24,8 @@ window.ACCOUNTS = [
       remit: "Ex-HSBC (CIO UK & Europe). Started 24 Nov 2025, reports to CEO Nuno Matos. Running a nine-priority tech strategy aligned to ANZ 2030.",
       status: "verified",
       evidence: "ANZ / iTnews appointment coverage; Bluenotes Jul 2026",
-      tag: "NEW",
+      isNew: true,
+      highlight: true,
     },
     sidekick: {
       name: "Daniel Szendrak",
@@ -32,13 +38,13 @@ window.ACCOUNTS = [
       { name: "Joshua McLean", title: "Divisional CIO, Retail Bank", remit: "Retail banking technology", status: "partial", evidence: "Directories list 'CIO, Retail & Commercial' at ANZ" },
       { name: "Peter Barrass", title: "Divisional CIO, Institutional", remit: "Institutional banking & markets technology", status: "corrected", evidence: "Spelling corrected from 'Barras' – public listings use 'Barrass' (CIO, Institutional Banking & Markets)" },
       { name: "Jo Hayes", title: "Divisional CIO, Group Services", remit: "Technology employee experience for ~45k staff; AI adoption", status: "verified", evidence: "ANZ Bluenotes author profile & articles" },
-      { name: "Tim Hogarth", title: "Chief Architect", remit: "Enterprise architecture & simplification", status: "verified", evidence: "Was ANZ's first CTO (2022), previously Chief Architect. Source chart shows him back in a Chief Architect role.", tag: "NEW" },
-      { name: "Tyson Sheills", title: "Chief Technology Officer", remit: "Infrastructure, hosting, cloud & platforms", status: "corrected", evidence: "Spelling corrected from 'Shiels' – public profiles use 'Sheills' (Group CTO)", tag: "NEW" },
-      { name: "Ian Cruttenden", title: "Acting – Strategy & Execution", remit: "Tech strategy office / portfolio execution", status: "unverified", evidence: "From the source org chart only; no public confirmation found", tag: "NEW" },
-      { name: "Sandro Bucchianeri", title: "Chief Information Security Officer", remit: "Cyber security. Ex-NAB CSO; started 11 Nov 2026, reports to Donald Patra.", status: "corrected", evidence: "ANZ media release 26 Aug 2026. Replaces Shane Ripley, who was Acting CISO on the source chart.", tag: "NEW" },
-      { name: "Kai Yang", title: "Chief Data & AI Officer", remit: "ANZ's first CDAIO; ex-HSBC. Appointed May 2026, reports to Donald Patra.", status: "verified", evidence: "ANZ announcement May 2026", tag: "NEW" },
-      { name: "TBD", title: "GM, Non-Financial Risk", remit: "NFR & controls uplift (one of the nine tech priorities)", status: "vacant", evidence: "Role shown as TBD on the source chart", tag: "NEW" },
-      { name: "Bagya Krishnamoorthy", title: "Head of GCC (India)", remit: "Global Capability Centre, Bengaluru; also Head of Data for Institutional", status: "partial", evidence: "LinkedIn: Head of Technology, GCC Bengaluru", tag: "NEW" },
+      { name: "Tim Hogarth", title: "Chief Architect", remit: "Enterprise architecture & simplification", status: "verified", evidence: "Was ANZ's first CTO (2022), previously Chief Architect. Source chart shows him back in a Chief Architect role.", isNew: true, highlight: true },
+      { name: "Tyson Sheills", title: "Chief Technology Officer", remit: "Infrastructure, hosting, cloud & platforms", status: "corrected", evidence: "Spelling corrected from 'Shiels' – public profiles use 'Sheills' (Group CTO)", isNew: true },
+      { name: "Ian Cruttenden", title: "Acting – Strategy & Execution", remit: "Tech strategy office / portfolio execution", status: "unverified", evidence: "From the source org chart only; no public confirmation found", isNew: true },
+      { name: "Sandro Bucchianeri", title: "Chief Information Security Officer", remit: "Cyber security. Ex-NAB CSO; started 11 Nov 2026, reports to Donald Patra.", status: "corrected", evidence: "ANZ media release 26 Aug 2026. Replaces Shane Ripley, who was Acting CISO on the source chart.", isNew: true },
+      { name: "Kai Yang", title: "Chief Data & AI Officer", remit: "ANZ's first CDAIO; ex-HSBC. Appointed May 2026, reports to Donald Patra.", status: "verified", evidence: "ANZ announcement May 2026", isNew: true },
+      { name: "TBD", title: "GM, Non-Financial Risk", remit: "NFR & controls uplift (one of the nine tech priorities)", status: "vacant", evidence: "Role shown as TBD on the source chart", isNew: true },
+      { name: "Bagya Krishnamoorthy", title: "Head of GCC (India)", remit: "Global Capability Centre, Bengaluru; also Head of Data for Institutional", status: "partial", evidence: "LinkedIn: Head of Technology, GCC Bengaluru", isNew: true },
     ],
     adjacent: [
       { name: "Shane Ripley", title: "Domain Lead, Cyber Security Risk (was Acting CISO)", status: "verified", evidence: "Acting CISO until Bucchianeri started 11 Nov 2026 (ANZ release)" },
@@ -59,6 +65,9 @@ window.ACCOUNTS = [
 
   {
     id: "medibank",
+    slideTitle: "Medibank Technology Org Chart",
+    supportBox: "Gartner Support",
+    footer: "RESTRICTED",
     name: "Medibank",
     asOf: "Validated 26 Nov 2026",
     source: "Account intel (Copilot) + public sources",
@@ -102,6 +111,9 @@ window.ACCOUNTS = [
 
   {
     id: "unisuper",
+    slideTitle: "UniSuper Technology Org Chart",
+    supportBox: "Gartner Support",
+    footer: "RESTRICTED",
     name: "UniSuper",
     asOf: "Validated 26 Nov 2026",
     source: "Account intel (Copilot) + public sources",
@@ -142,6 +154,9 @@ window.ACCOUNTS = [
 
   {
     id: "aia",
+    slideTitle: "AIA Australia Technology Org Chart",
+    supportBox: "Gartner Support",
+    footer: "RESTRICTED",
     name: "AIA Australia",
     asOf: "Validated 26 Nov 2026",
     source: "Account intel (Copilot) + public sources",
